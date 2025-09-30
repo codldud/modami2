@@ -2,15 +2,15 @@
 
 /* 각 시대별 배경 이미지 */
 .history_infant_bg {
-    background-image: url('../img/1940.svg'); /* ../ 추가 */
+    background-image: url('../image/1940.svg'); /* ../ 추가 */
 }
 
 .history_teenaget_bg {
-    background-image: url('../img/1950.svg'); /* ../ 추가 */
+    background-image: url('../image/1950.svg'); /* ../ 추가 */
 }
 
 .history_Adult_bg {
-    background-image: url('../img/1960.svg'); /* ../ 추가 */
+    background-image: url('../image/1960.svg'); /* ../ 추가 */
 }
 
 /* history_bg 스타일 (배경 공통) */
