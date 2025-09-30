@@ -2,12 +2,12 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     const stepsData = [
-        { step: "1단계", title: "양식, 일대기 작성", imgSrc: "/img/first.svg", href: "intro.html" },
+        { step: "1단계", title: "양식, 일대기 작성", imgSrc: "/image/first.svg", href: "intro.html" },
         // ▼▼▼ 아래 2~5단계 임시 데이터 추가 ▼▼▼
-        { step: "2단계", title: "유아기, 청소년기", imgSrc: "/img/second.svg", href: "step2.html" },
-        { step: "3단계", title: "성인기, 중년기", imgSrc: "/img/third.svg", href: "step3.html" },
-        { step: "4단계", title: "가족 이야기", imgSrc: "/img/fourth.svg", href: "step4.html" },
-        { step: "5단계", title: "마지막으로", imgSrc: "/img/fifth.svg", href: "step5.html" }
+        { step: "2단계", title: "유아기, 청소년기", imgSrc: "/image/second.svg", href: "step2.html" },
+        { step: "3단계", title: "성인기, 중년기", imgSrc: "/image/third.svg", href: "step3.html" },
+        { step: "4단계", title: "가족 이야기", imgSrc: "/image/fourth.svg", href: "step4.html" },
+        { step: "5단계", title: "마지막으로", imgSrc: "/image/fifth.svg", href: "step5.html" }
     ];
 
     const roadContainer = document.querySelector('.road');
@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const stepNumber = index + 1;
         const isEnabled = stepNumber <= (currentProgress + 1);
 
-        const imageSrc = isEnabled ? data.imgSrc : "/img/lock.svg";
+        const imageSrc = isEnabled ? data.imgSrc : "/image/lock.svg";
 
         let stepHTML = '';
         if (isEnabled) {
