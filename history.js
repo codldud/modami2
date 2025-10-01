@@ -1,9 +1,21 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 각 단계별 데이터
     const stages = [
-        { text: "BGM - 가거라 삼팔선 (1948) / 남인수", audioSrc: "../mp3/1940.mp3", backgroundClass: "history_infant_bg" },
-        { text: "BGM - 굳세어라 금순아 (1953) / 현인", audioSrc: "../mp3/1950.mp4", backgroundClass: "history_teenaget_bg" },
-        { text: "BGM - 노란 샤쓰의 사나이 (1961) / 한명숙", audioSrc: "../mp3/1960.mp4", backgroundClass: "history_Adult_bg" }
+         { 
+    text: "BGM - 가거라 삼팔선 (1948) / 남인수", 
+    audioSrc: "./sound/1.m4a", 
+    backgroundClass: "history_infant_bg"
+  },
+  { 
+    text: "BGM - 굳세어라 금순아 (1953) / 현인", 
+    audioSrc: "./sound/2.m4a", 
+    backgroundClass: "history_teenage_bg"
+  },
+  { 
+    text: "BGM - 노란 샤쓰의 사나이 (1961) / 한명숙", 
+    audioSrc: "./sound/3.m4a", 
+    backgroundClass: "history_adult_bg"
+  }
     ];
 
     let currentStageIndex = 0;
