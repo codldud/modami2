@@ -83,18 +83,22 @@ header {
 }
 
 :root {
-    --primary--color: #6ABEFE; /* 메인 컬러 */
-    --gray500--color: #A7A7A7; /* 회색 500 */
+    --primary--color: #6ABEFE;
+    /* 메인 컬러 */
+    --gray500--color: #A7A7A7;
+    /* 회색 500 */
 }
 
 .chapter p {
-    font-family: 'NanumBarunGothic', sans-serif; /* '/3' 부분 폰트 지정 */
+    font-family: 'NanumBarunGothic', sans-serif;
+    /* '/3' 부분 폰트 지정 */
     font-size: 32px;
     color: var(--gray500--color);
 }
 
 .chapter .current {
-    font-family: 'NanumBarunGothic', sans-serif; /* 'n' 값에 폰트 직접 지정 */
+    font-family: 'NanumBarunGothic', sans-serif;
+    /* 'n' 값에 폰트 직접 지정 */
     color: var(--primary--color);
     margin-right: 4px;
 }
@@ -113,7 +117,7 @@ header {
     text-align: center;
 }
 
-#step2 .hdb{
+#step2 .hdb {
     margin-top: 94px;
 }
 
@@ -206,7 +210,7 @@ body.step-2-bg .btn_container {
    7. 녹음 UI (Step 2 & Step 3)
    ========================================================================== */
 .interview-answer {
- position: fixed;
+    position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
@@ -219,36 +223,45 @@ body.step-2-bg .btn_container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between; /* 위, 아래로 요소를 밀착시킴 */
-    padding: 90px 0 64px 0;         /* 위 90px, 아래 64px 여백을 줌 */
+    justify-content: space-between;
+    /* 위, 아래로 요소를 밀착시킴 */
+    padding: 90px 0 64px 0;
+    /* 위 90px, 아래 64px 여백을 줌 */
 }
 
 .answer-display {
-width: 80%;
+    width: 80%;
     text-align: center;
-    font-size: 32px; /* 폰트 크기를 32px로 통일 */
+    font-size: 32px;
+    /* 폰트 크기를 32px로 통일 */
     font-weight: 500;
-    position: relative; /* 자식 요소 위치의 기준점 */
-    min-height: 1.5em; /* 텍스트가 없을 때 최소 높이 유지 */
+    position: relative;
+    /* 자식 요소 위치의 기준점 */
+    min-height: 1.5em;
+    /* 텍스트가 없을 때 최소 높이 유지 */
 }
 
 .guide-text {
     color: var(--gray500--color);
     transition: opacity 0.2s ease-in-out;
+    font-weight: 400;
 }
 
 
 .answer-output {
-  color: var(--black--color); /* 요청하신 검은색 */
+    font-size: 32px;
+    /* 폰트 크기 32px로 지정 */
+    font-weight: 400;
+    /* 폰트 굵기 Regular(400)로 지정 */
+    color: var(--black--color);
     line-height: 140%;
-    
-    /* 안내 문구와 정확히 겹치도록 위치 설정 */
+
+    /* 기존의 위치 및 보이기/숨기기 스타일 */
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-
-    opacity: 0; /* 기본적으로 투명하게 숨김 */
+    opacity: 0;
     transition: opacity 0.2s ease-in-out;
 }
 
@@ -319,14 +332,16 @@ width: 80%;
 #answer-step3.is-recording .guide-text,
 #answer-step2.post-record .guide-text,
 #answer-step3.post-record .guide-text {
-    opacity: 0; /* 안내 문구 숨기기 */
+    opacity: 0;
+    /* 안내 문구 숨기기 */
 }
 
 #answer-step2.is-recording .answer-output,
 #answer-step3.is-recording .answer-output,
 #answer-step2.post-record .answer-output,
 #answer-step3.post-record .answer-output {
-    opacity: 1; /* 결과 텍스트 보이기 */
+    opacity: 1;
+    /* 결과 텍스트 보이기 */
 }
 
 #answer-step2.post-record .record-btn,

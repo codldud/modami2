@@ -14,8 +14,35 @@ document.addEventListener('DOMContentLoaded', () => {
     let selectedGender = '';
 
     // ========================================================================
-    // ▼▼▼ 실시간 음성 인식 기능 함수 (MediaRecorder 대체) ▼▼▼
+    // ▼▼▼ 제목 추천 및 음성 인식 기능 ▼▼▼
     // ========================================================================
+
+    // 키워드 기반으로 제목을 생성하는 함수
+    const generateTitleFromText = (text) => {
+        const keywords = {
+            '행복': '나의 행복한 시절',
+            '사랑': '사랑을 담은 이야기',
+            '도전': '도전으로 가득찬 나의 삶',
+            '인생': '나의 특별한 인생 이야기',
+            '추억': '소중한 추억들',
+            '청춘': '눈부셨던 나의 청춘'
+        };
+
+        for (const keyword in keywords) {
+            if (text.includes(keyword)) {
+                return keywords[keyword]; // 키워드가 발견되면 추천 제목 반환
+            }
+        }
+        
+        // 키워드를 못 찾으면, 간단한 정리 후 텍스트를 그대로 사용하거나 기본값 반환
+        let cleanedTitle = text.trim();
+        if (cleanedTitle.length > 20) { // 너무 길면 기본 제목 사용
+            return '나의 특별한 이야기';
+        }
+        return cleanedTitle || '나의 특별한 이야기'; // 내용이 없으면 기본 제목
+    };
+
+    // 실시간 음성 인식 기능 함수
     const setupSpeechRecognition = (step, sectionId, startBtnId, stopBtnId, restartBtnId, nextBtnId, outputId) => {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRecognition) {
@@ -39,21 +66,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
         recognition.onresult = (event) => {
             let interimTranscript = '';
+            finalTranscript = '';
             for (let i = event.resultIndex; i < event.results.length; ++i) {
+                const transcript = event.results[i][0].transcript;
                 if (event.results[i].isFinal) {
-                    finalTranscript += event.results[i][0].transcript;
+                    finalTranscript += transcript;
                 } else {
-                    interimTranscript += event.results[i][0].transcript;
+                    interimTranscript += transcript;
                 }
             }
             outputText.textContent = finalTranscript + interimTranscript;
         };
         
         recognition.onend = () => {
-            // 녹음이 끝나면 UI 상태를 'post-record'로 변경
             answerSection.classList.remove('is-recording');
             answerSection.classList.add('post-record');
             stopBtn.disabled = true;
+
+            // 3단계일 경우, 녹음이 끝나면 제목 생성 로직 실행
+            if (step === 3 && finalTranscript) {
+                const suggestedTitle = generateTitleFromText(finalTranscript);
+                outputText.textContent = suggestedTitle; // 화면에 추천 제목 표시
+                // finalTranscript 변수 자체를 바꿀 필요는 없습니다. 어차피 저장 시점에 outputText.textContent를 읽습니다.
+                console.log(`추천된 제목: ${suggestedTitle}`);
+            }
         };
 
         const startRecognition = () => {
@@ -83,9 +119,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
         nextBtn.addEventListener('click', () => {
             const recordedText = outputText.textContent;
-            if (recordedText) {
-                localStorage.setItem(`recordedText_step${step}`, recordedText);
-                console.log(`[Step ${step}] 인식된 텍스트가 LocalStorage에 저장되었습니다:`, recordedText);
+            
+            if (step === 2) {
+                if (recordedText) {
+                    const numbers = recordedText.match(/\d+/g);
+                    if (numbers) {
+                        const year = numbers[0];
+                        localStorage.setItem(`recordedText_step${step}`, year);
+                        console.log(`[Step ${step}] 추출된 출생년도 ${year}를 LocalStorage에 저장했습니다.`);
+                    }
+                }
+            } else { // 3단계 포함
+                if (recordedText) {
+                    localStorage.setItem(`recordedText_step${step}`, recordedText);
+                    console.log(`[Step ${step}] 최종 텍스트 "${recordedText}"를 LocalStorage에 저장했습니다.`);
+                }
             }
             
             if (step === 2) goToStep3();
@@ -93,11 +141,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // 각 단계의 녹음 UI에 실제 음성 인식 기능 적용
+    // 각 단계의 녹음 UI에 기능 적용
     setupSpeechRecognition(2, 'answer-step2', 'btn-record-start-step2', 'btn-stop-step2', 'btn-restart-step2', 'btn-next-step2', 'output-text-step2');
     setupSpeechRecognition(3, 'answer-step3', 'btn-record-start-step3', 'btn-stop-step3', 'btn-restart-step3', 'btn-next-step3', 'output-text-step3');
+
     // ========================================================================
-    // ▲▲▲ 음성 인식 기능 끝 ▲▲▲
+    // ▲▲▲ 기능 끝 ▲▲▲
     // ========================================================================
 
     // --- 이벤트 리스너 및 단계 전환 함수 ---
