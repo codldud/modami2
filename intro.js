@@ -8,28 +8,99 @@ document.addEventListener('DOMContentLoaded', () => {
     const step3 = document.getElementById('step3');
     const step2Title = document.querySelector('#step2 h1');
     const step3Title = document.querySelector('#step3 h1');
-    
-    // ▼▼▼ 챕터 숫자 요소를 새로 선택합니다 ▼▼▼
     const chapterCurrent = document.querySelector('.chapter .current');
-
-    // --- 2단계 녹음 UI 요소 ---
-    const answerSectionStep2 = document.getElementById('answer-step2');
-    const recordBtnStep2 = document.getElementById('btn-record-start-step2');
-    const stopBtnStep2 = document.getElementById('btn-stop-step2');
-    const restartBtnStep2 = document.getElementById('btn-restart-step2');
-    const nextBtnStep2 = document.getElementById('btn-next-step2');
-
-    // --- 3단계 녹음 UI 요소 ---
-    const answerSectionStep3 = document.getElementById('answer-step3');
-    const recordBtnStep3 = document.getElementById('btn-record-start-step3');
-    const stopBtnStep3 = document.getElementById('btn-stop-step3');
-    const restartBtnStep3 = document.getElementById('btn-restart-step3');
-    const nextBtnStep3 = document.getElementById('btn-next-step3');
 
     // --- 상태 변수 ---
     let selectedGender = '';
 
-    // --- 이벤트 리스너 ---
+    // ========================================================================
+    // ▼▼▼ 실시간 음성 인식 기능 함수 (MediaRecorder 대체) ▼▼▼
+    // ========================================================================
+    const setupSpeechRecognition = (step, sectionId, startBtnId, stopBtnId, restartBtnId, nextBtnId, outputId) => {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            console.error("이 브라우저는 음성 인식을 지원하지 않습니다.");
+            return;
+        }
+
+        const answerSection = document.getElementById(sectionId);
+        const recordBtn = document.getElementById(startBtnId);
+        const stopBtn = document.getElementById(stopBtnId);
+        const restartBtn = document.getElementById(restartBtnId);
+        const nextBtn = document.getElementById(nextBtnId);
+        const outputText = document.getElementById(outputId);
+
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'ko-KR';
+        recognition.continuous = true;
+        recognition.interimResults = true;
+
+        let finalTranscript = '';
+
+        recognition.onresult = (event) => {
+            let interimTranscript = '';
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                    finalTranscript += event.results[i][0].transcript;
+                } else {
+                    interimTranscript += event.results[i][0].transcript;
+                }
+            }
+            outputText.textContent = finalTranscript + interimTranscript;
+        };
+        
+        recognition.onend = () => {
+            // 녹음이 끝나면 UI 상태를 'post-record'로 변경
+            answerSection.classList.remove('is-recording');
+            answerSection.classList.add('post-record');
+            stopBtn.disabled = true;
+        };
+
+        const startRecognition = () => {
+            finalTranscript = '';
+            outputText.textContent = '';
+            recognition.start();
+            answerSection.classList.add('is-recording');
+            answerSection.classList.remove('post-record');
+            stopBtn.disabled = false;
+        };
+        
+        const stopRecognition = () => {
+            recognition.stop();
+        };
+
+        const restartRecognition = () => {
+            finalTranscript = '';
+            outputText.textContent = '';
+            answerSection.classList.remove('is-recording');
+            answerSection.classList.remove('post-record');
+            stopBtn.disabled = true;
+        };
+
+        recordBtn.addEventListener('click', startRecognition);
+        stopBtn.addEventListener('click', stopRecognition);
+        restartBtn.addEventListener('click', restartRecognition);
+
+        nextBtn.addEventListener('click', () => {
+            const recordedText = outputText.textContent;
+            if (recordedText) {
+                localStorage.setItem(`recordedText_step${step}`, recordedText);
+                console.log(`[Step ${step}] 인식된 텍스트가 LocalStorage에 저장되었습니다:`, recordedText);
+            }
+            
+            if (step === 2) goToStep3();
+            else if (step === 3) goToNextPage();
+        });
+    };
+
+    // 각 단계의 녹음 UI에 실제 음성 인식 기능 적용
+    setupSpeechRecognition(2, 'answer-step2', 'btn-record-start-step2', 'btn-stop-step2', 'btn-restart-step2', 'btn-next-step2', 'output-text-step2');
+    setupSpeechRecognition(3, 'answer-step3', 'btn-record-start-step3', 'btn-stop-step3', 'btn-restart-step3', 'btn-next-step3', 'output-text-step3');
+    // ========================================================================
+    // ▲▲▲ 음성 인식 기능 끝 ▲▲▲
+    // ========================================================================
+
+    // --- 이벤트 리스너 및 단계 전환 함수 ---
     genderButtons.forEach(button => {
         button.addEventListener('click', () => {
             genderButtons.forEach(btn => btn.classList.remove('selected'));
@@ -39,7 +110,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 1단계 -> 2단계 전환
     mainNextButton.addEventListener('click', () => {
         if (selectedGender === '') {
             alert('성별을 선택해 주세요.');
@@ -49,53 +119,18 @@ document.addEventListener('DOMContentLoaded', () => {
         step1.style.display = 'none';
         step2.style.display = 'block';
         document.body.classList.add('step-2-bg');
-
-        // ▼▼▼ 챕터 숫자를 '2'로 변경합니다 ▼▼▼
         chapterCurrent.textContent = '2';
     });
 
-    // 2단계 -> 3단계 전환
-    nextBtnStep2.addEventListener('click', () => {
+    const goToStep3 = () => {
         step3Title.innerHTML = `${selectedGender}가 만드실<br>자서전의 제목은 무엇으로 할까요?`;
         step2.style.display = 'none';
         step3.style.display = 'block';
-
-        // ▼▼▼ 챕터 숫자를 '3'으로 변경합니다 ▼▼▼
         chapterCurrent.textContent = '3';
-    });
+    };
 
-    // 3단계 -> 다음 페이지 전환
-    nextBtnStep3.addEventListener('click', () => {
+    const goToNextPage = () => {
         localStorage.setItem('autostartNarration', 'true');
         window.location.href = 'narration.html';
-    });
-
-
-    // --- 2단계 녹음 버튼 시각적 효과 ---
-    recordBtnStep2.addEventListener('click', () => {
-        answerSectionStep2.classList.add('is-recording');
-        answerSectionStep2.classList.remove('post-record');
-    });
-    stopBtnStep2.addEventListener('click', () => {
-        answerSectionStep2.classList.remove('is-recording');
-        answerSectionStep2.classList.add('post-record');
-    });
-    restartBtnStep2.addEventListener('click', () => {
-        answerSectionStep2.classList.remove('is-recording');
-        answerSectionStep2.classList.remove('post-record');
-    });
-
-    // --- 3단계 녹음 버튼 시각적 효과 ---
-    recordBtnStep3.addEventListener('click', () => {
-        answerSectionStep3.classList.add('is-recording');
-        answerSectionStep3.classList.remove('post-record');
-    });
-    stopBtnStep3.addEventListener('click', () => {
-        answerSectionStep3.classList.remove('is-recording');
-        answerSectionStep3.classList.add('post-record');
-    });
-    restartBtnStep3.addEventListener('click', () => {
-        answerSectionStep3.classList.remove('is-recording');
-        answerSectionStep3.classList.remove('post-record');
-    });
+    };
 });
