@@ -34,12 +34,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-        // 키워드를 못 찾으면, 간단한 정리 후 텍스트를 그대로 사용하거나 기본값 반환
         let cleanedTitle = text.trim();
-        if (cleanedTitle.length > 20) { // 너무 길면 기본 제목 사용
+        if (cleanedTitle.length > 20) {
             return '나의 특별한 이야기';
         }
-        return cleanedTitle || '나의 특별한 이야기'; // 내용이 없으면 기본 제목
+        return cleanedTitle || '나의 특별한 이야기';
     };
 
     // 실시간 음성 인식 기능 함수
@@ -66,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         recognition.onresult = (event) => {
             let interimTranscript = '';
-            finalTranscript = '';
+            // finalTranscript = ''; // <- 버그를 유발하던 이 줄을 삭제했습니다.
             for (let i = event.resultIndex; i < event.results.length; ++i) {
                 const transcript = event.results[i][0].transcript;
                 if (event.results[i].isFinal) {
@@ -83,11 +82,9 @@ document.addEventListener('DOMContentLoaded', () => {
             answerSection.classList.add('post-record');
             stopBtn.disabled = true;
 
-            // 3단계일 경우, 녹음이 끝나면 제목 생성 로직 실행
-            if (step === 3 && finalTranscript) {
-                const suggestedTitle = generateTitleFromText(finalTranscript);
-                outputText.textContent = suggestedTitle; // 화면에 추천 제목 표시
-                // finalTranscript 변수 자체를 바꿀 필요는 없습니다. 어차피 저장 시점에 outputText.textContent를 읽습니다.
+            if (step === 3 && outputText.textContent) {
+                const suggestedTitle = generateTitleFromText(outputText.textContent);
+                outputText.textContent = suggestedTitle;
                 console.log(`추천된 제목: ${suggestedTitle}`);
             }
         };
